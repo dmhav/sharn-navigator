@@ -1,0 +1,254 @@
+<!-- Sharn navigator.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sharn Navigator</title>
+</head>
+
+<body>
+    <div id="main-container">
+        <h1 id="title"> Sharn Navigator</h1>
+        <div id="skycoach-container">
+            <button id="skycoach-button"></button>
+            <div id="skycoach-modal" class="collapsed; dropdown">
+                <select class="form-control" id="skycoach-districts-select"></select>
+            </div>
+        </div>
+        <div id="district-container">
+            <h2 id="name"></h2>
+            <p id="description"></p>
+            <h3 id="locations-header">Locais:</h2>
+                <div id="locations">
+                    <ul id="locations-list"></ul>
+                </div>
+                <h3>Navegação:</h2>
+                    <div id="navigation"></div>
+        </div>
+        <br>
+        <!-- Mapas -->
+        <div id="images"></div>
+        <!-- Dados -->
+        <script src="wards_n_districts.js"></script>
+        <script src="sharn-graph.js"></script>
+        <!-- Operação -->
+        <script src="script.js"></script>
+    </div>
+</body>
+
+</html>
+
+<style>
+    #skycoach-container {
+        display: flex; /* Ativa o layout flexbox */
+        flex-direction: row; /* Organiza os elementos em coluna */
+    }
+    #district-container {
+        display: flex; /* Ativa o layout flexbox */
+        flex-direction: column; /* Organiza os elementos em coluna */
+    }
+
+    #skycoach-modal, #skycoach-districts-select {
+        order: 1; /* Valor menor para a lista */
+        cursor: pointer;
+        height: 40px;
+    }
+    
+    #skycoach-button {
+        order: 0; /* Valor maior para o botão */
+        height: 40px;
+    }
+    /* Layout Geral */
+
+    #main-container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    #header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    #header h1 {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    section {
+        margin-bottom: 20px;
+    }
+
+    article {
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+    }
+
+    /* Tipografia */
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    h3 {
+        font-size: 16px;
+    }
+
+    p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    p {
+        color: #333;
+    }
+
+    /* Cores e Contraste */
+
+    body {
+        background-color: #f8f9fa;
+    }
+
+    #header {
+        background-color: #337ab7;
+        color: #fff;
+    }
+
+    section {
+        background-color: #fff;
+    }
+
+    /* Elementos Interativos */
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    /* Listas */
+
+    #locations-list {
+        list-style: none;
+        /* Remover marcadores de lista padrão */
+        padding: 0;
+        /* Remover espaçamento interno padrão */
+    }
+
+    #locations-list li {
+        padding: 10px;
+        /* Espaçamento interno dos itens da lista */
+        border-bottom: 1px solid #ddd;
+        cursor: pointer;
+    }
+
+    #locations-list li:hover {
+        background-color: #eee;
+    }
+
+    .location-description {
+        padding: 10px;
+        border: 1px solid #ddd;
+        margin-top: 5px;
+        display: none;
+        /* Ocultar a descrição por padrão */
+    }
+
+    .location-description+li {
+        margin-top: 10px;
+        /* Espaçamento entre a descrição e o próximo item da lista */
+    }
+
+    .location-description.collapsed {
+        display: block;
+        /* Mostrar a descrição quando a classe "collapsed" for removida */
+    }
+
+    /* Imagens */
+
+    #map-image {
+        width: 100%;
+        /* Ajustar a largura da imagem ao container */
+        max-height: 500px;
+        /* Definir altura máxima para a imagem */
+        margin-bottom: 20px;
+    }
+
+    /* Navegação */
+
+    #navigation {
+        text-align: center;
+    }
+
+    #navigation button {
+        margin: 5px;
+        /* Espaçamento entre os botões */
+        padding: 10px 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #navigation button:hover {
+        background-color: #eee;
+    }
+
+    /* Setas Direcionais */
+
+    #arrow-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    #arrow-container img {
+        margin: 0 5px;
+        /* Espaçamento entre as setas */
+    }
+
+    .collapsed {
+        display: none;
+    }
+
+    .collapsible-button {
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+    .collapsed .arrow-down {
+        display: inline;
+    }
+
+    .expanded .arrow-up {
+        display: inline;
+    }
+
+    .arrow-down,
+    .arrow-up {
+        display: none;
+    }
+
+    .visible {
+        display: inline-block;
+    }
+</style>
