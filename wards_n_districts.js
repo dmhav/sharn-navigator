@@ -278,7 +278,8 @@ const wards_n_districts = {
                     "Precarious",
                     "Sharn's Welcome",
                     "Stormhold",
-                    "Rattlestone"
+                    "Rattlestone",
+                    "Ashblack"
                 ],
                 "description": "A warehouse district with a large halfling population, with ties to the Boromar Clan.",
                 "locations": {}
@@ -1170,31 +1171,41 @@ const wards_n_districts = {
         "districts": {
             "Azure": {
                 "arrow_positions": {
-                    "slice_x": 0,
-                    "slice_y": 0
+                    "slice_x": 600,
+                    "slice_y": 600
                 },
                 "connections": [
                     "Brilliant"
                 ],
                 "description": "",
                 "locations": {
-                    "The Azure Gateway": "This luxurious hotel and restaurant recently replaced an old Ghallanda inn. The menu is a \"Galifar fusion,\" combining styles from across the Five Nations.",
-                    "The Cloud Dragon ": "This restaurant serves traditional Brelish cuisine, and it does so exceptionally well. It's rarely as crowded as the other venues in Skyway, but locals know its value.",
-                    "The Dragon's Hoard": "This resort, maintained by House Ghallanda, offers every luxury for those who can afford its high prices."
+                    "The Azure Gateway": {
+                        "description": "This luxurious hotel and restaurant recently replaced an old Ghallanda inn. The menu is a 'Galifar fusion' combining styles from across the Five Nations."
+                    },
+                    "The Cloud Dragon ": {
+                        "description": "This restaurant serves traditional Brelish cuisine, and it does so exceptionally well. It's rarely as crowded as the other venues in Skyway, but locals know its value."
+                    },
+                    "The Dragon's Hoard": {
+                        "description": "This resort, maintained by House Ghallanda, offers every luxury for those who can afford its high prices."
+                    }
                 }
             },
             "Brilliant": {
                 "arrow_positions": {
-                    "slice_x": 0,
-                    "slice_y": 0
+                    "slice_x": 600,
+                    "slice_y": 400
                 },
                 "connections": [
                     "Azure"
                 ],
                 "description": "",
                 "locations": {
-                    "Tain Manor ": "Sharn's social life revolves around the ir'Tain family. The monthly Tain Gala is the hottest ticket in town, and it's held at the family estate in Skyway.",
-                    "The Celestial Vista": "This legendary restaurant is owned by Skyway's city councilor, Lady Evix ir'Marasha. The floor is studded with crystal windows, allowing diners to look down into the city below. The food isn't incredible, but tourist crowds keep the Vista filled with customers."
+                    "Tain Manor ": {
+                        "description": "Sharn's social life revolves around the ir'Tain family. The monthly Tain Gala is the hottest ticket in town, and it's held at the family estate in Skyway."
+                    },
+                    "The Celestial Vista": {
+                        "description": "This legendary restaurant is owned by Skyway's city councilor, Lady Evix ir'Marasha. The floor is studded with crystal windows, allowing diners to look down into the city below. The food isn't incredible, but tourist crowds keep the Vista filled with customers."
+                    }
                 }
             }
         }
@@ -1273,42 +1284,69 @@ const wards_n_districts = {
         "districts": {
             "Ashblack": {
                 "arrow_positions": {
-                    "slice_x": 0,
-                    "slice_y": 0
+                    "slice_x": 220,
+                    "slice_y": 540
                 },
                 "connections": [
-                    "Khyber Gate"
+                    "Khyber's Gate",
+                    "The Stores"
                 ],
                 "description": "The first foundries of Sharn were built here. The district is devoted to industry, and the environment here is sweltering and claustrophobic.",
-                "locations": {}
+                "locations": {
+                    "Keldoran Forge": {
+                        "description": "Home to the dwarf Keldoran, where he produces high-quality metal arms and armor."
+                    },
+                    "Cannith Forgehold": {
+                        "description": "This subterranean fortress includes a wide range of forges, alchemical workshops, and mystical facilities. It is an artificer’s dream, and Merrix d'Cannith spends most of his time there. The Forgehold has many secrets."
+                    }
+                }
             },
             "Blackbones": {
                 "arrow_positions": {
-                    "slice_x": 0,
-                    "slice_y": 0
+                    "slice_x": 555,
+                    "slice_y": 840
                 },
                 "connections": [
-                    "Khyber Gate",
+                    "Khyber's Gate",
                     "Cogsgate"
                 ],
                 "description": "Blackbones is newer than Ashblack, and it shows. The district's corridors are wider and better lit. The foundries are well maintained, and the district has a few thriving businesses. Most of the warforged that reside in Sharn work in Blackbones.",
                 "locations": {
                     "The Pool of Onatar's Tears": {
                         "description": "It is said to impart a blessing to any smith who bathes their hands in its waters"
+                    },
+                    "The Red Hammer Inn": {
+                        "description": "This inn has a mostly Warforged patronage."
                     }
                 }
             },
-            "Khyber Gate": {
+            "Khyber's Gate": {
                 "arrow_positions": {
-                    "slice_x": 0,
-                    "slice_y": 0
+                    "slice_x": 515,
+                    "slice_y": 590
                 },
                 "connections": [
                     "Blackbones",
                     "Ashblack"
                 ],
                 "description": "A tenement district",
-                "locations": {}
+                "locations": {
+                    "Shamukaar": {
+                        "description": ""
+                    },
+                    "The Wounded Dragon": {
+                        "description": ""
+                    },
+                    "Temple of the Six": {
+                        "description": ""
+                    },
+                    "Citadel of the Closed Circle": {
+                        "description": ""
+                    },
+                    "Workshop of Tyrial Dashar": {
+                        "description": ""
+                    }
+                }
             }
         }
     },

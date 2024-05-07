@@ -67,9 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
     skycoachList.value = currentDistrict.getName();
 
     skycoachList.onchange = function() {
-        let selectedDistritcName = this.value;
+        let selectedDistrictName = this.value;
         console.log(`Flew to ${this.value}`);
-        travelToSkycoachDistrict(selectedDistritcName);
+        console.log(`Map: ${getMap(sharn.getDistrict(this.value))}`);
+        travelToSkycoachDistrict(selectedDistrictName);
     }
 
     toggleSkycoachButton.classList.add('collapsible-button', 'visible', 'collapsed');
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     updateDistrictInfo()
-    updateImages(getMap(currentDistrict));
+    updateSliceMap(getMap(currentDistrict));
     updateArrowPosition(currentDistrict.arrow_positions);
 
     function setArrowPosition(arrow, x,y) {
@@ -93,9 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
         arrow.style.top = `${y_calc}px`;
     };
 
-    function updateImages(map) {
-        mapSrc = map;
-        slice_img.src = mapSrc;
+    function updateSliceMap(map) {
+        slice_img.src = map;
     };
     
     function updateDistrictInfo() {
@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             locationItem.textContent = location.getName();
             
             let locationDescription = document.createElement(`span`);
+            console.log(location);
             locationDescription.textContent = ` - ${location.getDescription()}`;
             locationDescription.classList.add('collapsed');
             
@@ -148,9 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (connectMap !== currentMap) {
                 connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
-                if ((connectMap.includes("M_") && currentMap.includes("L_")) || (connectMap.includes("U_") && currentMap.includes("M_"))) {
+                if (currentMap.includes("The_Cogs") || connectMap.includes("Skyway") || (connectMap.includes("M_") && currentMap.includes("L_")) || (connectMap.includes("U_") && currentMap.includes("M_"))) {
                     connectionText  = "↑ Subir";
-                } else if ((connectMap.includes("M_") && currentMap.includes("U_")) || (connectMap.includes("L_") && currentMap.includes("M_"))) {
+                } else if (currentMap.includes("Skyway") || connectMap.includes("The_Cogs") || (connectMap.includes("M_") && currentMap.includes("U_")) || (connectMap.includes("L_") && currentMap.includes("M_"))) {
                     connectionText  = "↓ Descer";
                 }
             } else if (connectedDistrict.getWard() !== currentDistrict.getWard()) {
@@ -175,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.onclick = function() {
                 currentDistrict = connectedDistrict;
                 updateDistrictInfo();
-                updateImages(getMap(currentDistrict));
+                updateSliceMap(getMap(currentDistrict));
                 updateArrowPosition(currentDistrict.arrow_positions);
             };
             navigationDiv.appendChild(button);
@@ -185,11 +186,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getMap(district) {
         const wardName = district.getWard().getName();
-        if (wardName.includes('Upper') || wardName.includes('Skyway') || wardName.includes('City of the Dead')) {
+        if (wardName.includes('Upper') || wardName.includes('City of the Dead')) {
             return "U_Wards.jpg";
         } else if (wardName.includes('Middle')) {
             return "M_Wards.jpg";
         } 
+        else if (wardName == 'The Cogs') {
+            return "The_Cogs.jpg";
+        }
+        else if (wardName == 'Skyway') {
+            return "Skyway.jpg";
+        }
         else /*if (wardName.includes('Lower'))*/ {
             return "L_Wards.jpg";
         }
@@ -223,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Atualizar a interface com as informações do novo distrito
             updateDistrictInfo();
-            updateImages(getMap(currentDistrict));
+            updateSliceMap(getMap(currentDistrict));
             updateArrowPosition(currentDistrict.arrow_positions);
         }
     }
