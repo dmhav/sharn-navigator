@@ -1,6 +1,128 @@
 //sharn-graph.js
 
+const months = [
+    {
+        "name": "Zarantyr",
+        "season": "Mid-Winter",
+        "dragonmark": "Storm"
+    },
+    {
+        "name": "Olarune",
+        "season": "Late winter",
+        "dragonmark": "Sentinel"
+    },
+    {
+        "name": "Therendor",
+        "season": "Early Spring",
+        "dragonmark": "Healing"
+    },
+    {
+        "name": "Eyre",
+        "season": "Mid-spring",
+        "dragonmark": "Making"
+    },
+    {
+        "name": "Dravago",
+        "season": "Late Spring",
+        "dragonmark": "Handling"
+    },
+    {
+        "name": "Nymm",
+        "season": "Early Summer",
+        "dragonmark": "Hospitality"
+    },
+    {
+        "name": "Lharvion",
+        "season": "Mid-summer",
+        "dragonmark": "Detection"
+    },
+    {
+        "name": "Barrakas",
+        "season": "Late Summer",
+        "dragonmark": "Finding"
+    },
+    {
+        "name": "Rhaan",
+        "season": "Early Autumn",
+        "dragonmark": "Scribing"
+    },
+    {
+        "name": "Sypheros",
+        "season": "Mid-autumn",
+        "dragonmark": "Shadow"
+    },
+    {
+        "name": "Aryth",
+        "season": "Late Autumn",
+        "dragonmark": "Passage"
+    },
+    {
+        "name": "Vult",
+        "season": "Early Winter",
+        "dragonmark": "Warding"
+    }
+];
+
+const weekdays = [
+    "Sul",
+    "Mol",
+    "Zol",
+    "Wir",
+    "Zor",
+    "Far",
+    "Sar"
+];
+
 // Classes
+class Calendar {
+    constructor(day, month, year) {
+        this.weekday = day % 7 != 0 ? day % 7 : 7;
+        this.day = day;
+        this.month = month;
+        this.year = year;
+    }
+
+    update(total_days) {
+        this.weekday = total_days % 7 != 0 ? total_days % 7 : 7;
+        this.day = total_days % 28 != 0 ? total_days % 28 : 28;
+        this.month = this.day == 28 ? Math.floor(total_days/28) : 1+Math.floor(total_days/28);
+        this.year = 998;
+        while (this.month > 12) {
+            this.year += 1;
+            this.month -= 12;
+        }
+    }
+
+    getDate() {
+        return `${weekdays[this.weekday-1]}, ${String(this.day).padStart(2, '0')} ${months[this.month-1].name} ${this.year} YK`
+    }
+}
+
+class Clock {
+    constructor(day, hour, minute) {
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+    }
+
+    incrementClock(total_minutes) {
+        if (total_minutes > 0) {
+            const hours2sum = Math.floor(total_minutes / 60);
+            const minutes2sum = total_minutes % 60;
+            
+            this.minute += minutes2sum;
+            while (this.minute >= 60) {
+                this.hour += 1;
+                this.minute -= 60;
+            }
+            this.hour += hours2sum;
+            while (this.hour >= 24) {
+                this.hour -= 24;
+                this.day += 1;
+            }
+        }
+    }
+}
 
 class Place {
     constructor(name) {

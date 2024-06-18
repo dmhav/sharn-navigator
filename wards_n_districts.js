@@ -492,7 +492,17 @@ const wards_n_districts = {
                     "Blackbones"
                 ],
                 "description": "This warehouse district is the gateway to the Cogs, and shipments of ore and other goods regularly pass through here. House Kundarak has high-security storage facilities for rent, and a House Deneith outpost hires out Blademark mercenaries for venturing below.",
-                "locations": {}
+                "locations": {
+                    "Kundarak Storage": {
+                        "description": "The House of Warding maintains five high-security warehouses in this district, each protected by arcane seal, alarm, glyphs of warding, and other mundane and magic traps. The price is twice that of the other warehouses in Cogsgate, but this all but ensures that the goods are protected."
+                    },
+                    "House Deneith outpost": {
+                        "description": "Visiting merchants may have concerns about the safety of their goods—or their skins. There is a small House Deneith outpost in this district where travelers can arrange for additional warehouse security, long-term bodyguards, or short term escorts to the higher levels of the city."
+                    },
+                    "Tariff offices": {
+                        "description": "Merchants can pay the taxes levied on their goods (the Guardians of the Gate and the Wharf Watch both perform customs investigations in Cogsgate) and local landowners can come to pay their taxes to the Brelish Crown."
+                    }
+                }
             },
             "Dragoneyes": {
                 "arrow_positions": {
@@ -1057,7 +1067,7 @@ const wards_n_districts = {
                     "High Walls",
                     "Copper Arch"
                 ],
-                "description": "",
+                "description": "Inns and taverns stretch as far as the eye can see. The quality is not exceptional, but there is no shortage of places to stay.",
                 "locations": {}
             },
             "Deathsgate": {
@@ -1069,7 +1079,8 @@ const wards_n_districts = {
                     "Dancing Shadows",
                     "Little Barrington",
                     "Dragoneyes",
-                    "Dalan's Refuge"
+                    "Dalan's Refuge",
+                    "Halden's Tomb"
                 ],
                 "description": "Named for the nearby City of the Dead, this district houses the Deathsgate Guild and businesses that cater to adventurers. House Deneith recruits mercenaries at its outpost here.",
                 "locations": {
@@ -1213,7 +1224,7 @@ const wards_n_districts = {
     "The City of the Dead": {
         "arrow_positions": {
             "vert_x": 0,
-            "vert_y": 0
+            "vert_y": 500
         },
         "description": "Look to the cliffs to the north of Sharn, and you'll see a collection of crypts embedded into the cliff face. This is the City of the Dead, the final resting place of the wealthiest citizens of Sharn. Common folk are cremated after death, but members of the Sixty Families and others with sufficient wealth have their remains interred in the tombs and tunnels of this necropolis.\bFew people reside in this area. Among its major features are Aureon's Holt, a temple of the Restful Watch, where Sovereign priests conduct funerals and serve as the caretakers of the tombs. Warden Tower is an outpost of the Church of the Silver Flame, staffed by a single hermit tasked to watch for supernatural threats.\bThough the City of the Dead is largely peaceful, stories circulate about dark powers lurking there. Some parents warn their children of the Lich-Priest Gath, who steals disobedient children and forces them to work in his kingdom of the dead, polishing the bones of his skeletal subjects.",
         "districts": {
@@ -1225,7 +1236,7 @@ const wards_n_districts = {
                 "connections": [
                     "Dragon Crypts",
                     "Halden's Tomb",
-                    "Oak Towers"
+                    "Shae Lias"
                 ],
                 "description": "This section of the City of the Dead holds temples used during funeral services.",
                 "locations": {
@@ -1254,8 +1265,8 @@ const wards_n_districts = {
                     "slice_y": 473
                 },
                 "connections": [
-                    "Pinnacle",
-                    "Dead Temples"
+                    "Dead Temples",
+                    "Deathsgate"
                 ],
                 "description": "Silent tombs stand nestled among the rocky crags of the cliff top, keeping silent watch over the dead.",
                 "locations": {
@@ -1782,8 +1793,7 @@ const wards_n_districts = {
                     "Shae Lias",
                     "Crystal Bridge",
                     "Platinum Heights",
-                    "Oakbridge",
-                    "Dead Temples"
+                    "Oakbridge"
                 ],
                 "description": "A residential district where housing ranges from comfortable to aristocratic. Construction in Oak Towers uses materials and styles drawn from Aerenal, and the district is home to many of Sharn's established elf and half-elf families.",
                 "locations": {}
@@ -1795,7 +1805,8 @@ const wards_n_districts = {
                 },
                 "connections": [
                     "Oak Towers",
-                    "High Hope"
+                    "High Hope",
+                    "Dead Temples"
                 ],
                 "description": "This district is a bastion for the culture and traditions of the elves of Aerenal. It includes a variety of businesses specializing in Aereni goods, as well as a temple of the Undying Court.",
                 "locations": {
