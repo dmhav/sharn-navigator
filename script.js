@@ -345,6 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const button = document.createElement('button');
             
             const { connectionText, connectionText2 } = getConnectionText(connectedDistrict);
+            //console.log(JSON.stringify({connectionText, connectionText2}));
             button.textContent = `${connectionText} para ${connectedDistrict.getName()}${connectionText2}`;
             button.onclick = function () {
                 travelToConnectedDistrict(connectedDistrict);
@@ -361,27 +362,30 @@ document.addEventListener('DOMContentLoaded', function () {
         let connectMap = getMap(connectedDistrict);
         let currentMap = getMap(currentDistrict);
     
+        //console.log(JSON.stringify({currentMap, connectMap}));
+
         if (connectMap !== currentMap) {
             connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
-            if (currentMap.includes("The_Cogs") || connectMap.includes("Skyway") || (connectMap.includes("M_") && currentMap.includes("L_")) || (connectMap.includes("U_") && currentMap.includes("M_"))) {
+            if (currentMap.includes("The_Cogs") || connectMap.includes("Skyway")) {
                 connectionText = "↑ Subir";
-            } else if (currentMap.includes("Skyway") || connectMap.includes("The_Cogs") || (connectMap.includes("M_") && currentMap.includes("U_")) || (currentMap.includes("L_") && connectMap.includes("M_"))) {
+            } else if (
+                (connectMap.includes("M_") && currentMap.includes("L_")) || 
+                (connectMap.includes("U_") && currentMap.includes("M_"))) {
+                connectionText = "↑ Subir";
+            } else if (currentMap.includes("Skyway") || connectMap.includes("The_Cogs")) {
                 connectionText = "↓ Descer";
-            }
+            } else if (
+                ((connectMap.includes("M_") && currentMap.includes("U_")) ||
+                (connectMap.includes("L_") && currentMap.includes("M_")))) {
+                    connectionText = "↓ Descer";
+                }
         } else if (connectedDistrict.getWard() !== currentDistrict.getWard()) {
             connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
-            if (currentDistrict.getWard().getName().includes("The Cogs")) {
-                connectionText = "↑ Subir";
-            } else if (connectionText2.includes("The Cogs")) {
-                connectionText = "↓ Descer";
-            } else {
-                connectionText = "↷ Atravessar";
-            }
-        } else if (connectedDistrict.getWard() == currentDistrict.getWard()) {
+            connectionText = "↷ Atravessar";
+        } else {
             connectionText = "→ Ir";
             connectionText2 = "";
         }
-    
         return { connectionText, connectionText2 };
     }
     
