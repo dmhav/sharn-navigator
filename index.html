@@ -10,19 +10,17 @@
 </head>
 
 <body>
-    <div id="loading-screen">
-        <img id="loading-img">
-    </div>
-    <div id="main-container" style="display:none">
+    <div id="main-container">
         <button id="dark-button" aria-label="Toggle dark mode">Toggle Dark Mode</button>
-        <button id="reset-button" aria-label="Reset local preferences">Reset Preferences</button>
+        <button id="reset-button" aria-label="Reset history">Reset History</button>
+        <button id="path-button" aria-label="Draw path">Draw path</button>
         <h1 id="title"> Sharn Navigator</h1>
 
         <div id="clock-container">
             <span id="events"></span>
             <span id="clock">Dia 01 - 00h00</span>
-            <button id="wait-button" aria-label="Wait for a set amount of time">Wait</button>
-            <button id="skip-button" aria-label="Skip time">Skip</button>
+            <button id="wait-button" aria-label="Wait for a set amount of time">Wait (minutes)</button>
+            <button id="skip-button" aria-label="Skip time">Skip (days)</button>
         </div>
 
         <div id="skycoach-container">
@@ -45,7 +43,18 @@
         </div>
         <br>
         <!-- Mapas -->
-        <div id="images"></div>
+        <div id="images-container">
+            <div id="slice-map-container">
+                <canvas id= "slice-arrow-history-canvas"></canvas>
+                <img alt="Sharn map (slice)" id="slice-map-img">
+                <img src= "arrow2.png" alt="You are here" id="slice-arrow-img">
+            </div>
+            <div id="vertical-map-container">
+                <canvas id= "vertical-arrow-history-canvas"></canvas>
+                <img alt="Sharn map (vertical)" id="vertical-map-img">
+                <img src= "arrow.png" alt="You are at this level" id="vertical-arrow-img">
+            </div>
+        </div>
         <!-- Dados -->
         <script src="wards_n_districts.js"></script>
         <script src="sharn-graph.js"></script>

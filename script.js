@@ -1,22 +1,17 @@
 //script.js
-
 document.addEventListener('DOMContentLoaded', function () {
-    const lightImages = [
-        'cover.jpg'
-    ];
-    const darkImages = [
-        'cover1.jpg',
-        'cover2.jpg',
-        'cover3.jpg',
-        'cover4.jpg',
-        'cover5.jpg'
-    ];
+    // Constantes
+    const arrow_dimensions = 50;
+    const arrow_height = `${arrow_dimensions}px`;
+    const arrow_width = `${arrow_dimensions}px`;
+
     // Variáveis
     let currentDistrict;
     let clock;
     let calendar;
     let isDarkMode;
     let mapSrc;
+    let arrowHistory;
     // Carregando estado
     loadState();
 
@@ -26,12 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.getElementById('title').textContent = sharn.name;
-    // Loading
-    const loadingScreen = document.getElementById("loading-screen");
-    const loadingImage = document.getElementById('loading-img');
-    loadingImage.src = isDarkMode ? getRandomElement(darkImages) : getRandomElement(lightImages);
     // Seções da página
-    const mainDiv = document.getElementById('main-container');
+    //const mainDiv = document.getElementById('main-container');
     // Navegação
     const nameDiv = document.getElementById('name');
     const descriptionDiv = document.getElementById('description');
@@ -40,9 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const skycoachModal = document.getElementById('skycoach-modal');
     const skycoachList = document.getElementById('skycoach-districts-select');
     // Imagens
-    const imagesDiv = document.getElementById('images');
-    const slice_div = document.createElement('div');
-    const vert_div = document.createElement('div');
+    const slice_img = document.getElementById('slice-map-img');
+    const vert_img = document.getElementById('vertical-map-img');
+    const arrow_slice = document.getElementById("slice-arrow-img");
+    const arrow_vert = document.getElementById("vertical-arrow-img");
+    const canvas_slice = document.getElementById("slice-arrow-history-canvas");
+    const canvas_vert = document.getElementById("vertical-arrow-history-canvas");
+
     
     // Botões
     // Skycoach
@@ -53,7 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Configurações
     const darkButton = document.getElementById('dark-button');
     const resetButton = document.getElementById('reset-button');
-
+    // Caminho
+    const pathButton = document.getElementById('path-button');
+    
     // Clock
     const clockDisplay = document.getElementById('clock');
     const events = document.getElementById('events');
@@ -61,15 +58,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Operações preliminares
     initializeImages();
-    updateTooltip();
     populateSkycoachDistrictsList();
-    skycoachList.value = currentDistrict.getName();
-
-  
+    updateDistrictInfo();
+    
     // Event listeners
+    
+    window.addEventListener('load', () => {
+        updateArrowPosition(); // Precisa ficar aqui porque 
+    });
+
+    let pathDrawn = false;
+    pathButton.addEventListener('click', () =>{
+        if (pathDrawn) {
+            location.reload();
+            pathButton.textContent = "Draw path";
+        } else {
+            drawHistoryLines();
+            pathButton.textContent = "Erase path";
+        }
+        pathDrawn = !pathDrawn;
+    })
 
     waitButton.addEventListener('click', () => {
-        const minutes = prompt('How many minutes do you want to wait?');
+        const minutes = prompt('How many minutes do you want to wait?\n1h = 60\n1 dia = 1440');
         if (minutes !== null && !isNaN(minutes)) {
             clock.incrementClock(parseInt(minutes));
             updateClockDisplay(clock);
@@ -77,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     skipButton.addEventListener('click', () => {
-        const days = prompt('How many days do you want to skip?');
+        const days = prompt('How many days do you want to skip?\n1 semana = 7\n1 mês = 28\n1 ano = 336');
         if (days !== null && !isNaN(days)) {
             const minutes = parseInt(days) * 1440;
             clock.incrementClock(minutes);
@@ -95,19 +106,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     resetButton.addEventListener('click', () => {
-        localStorage.removeItem('darkMode'); // Remove apenas a preferência de dark mode
+        //localStorage.removeItem('darkMode');
         localStorage.setItem('currentDistrict', "Terminus");
         localStorage.setItem('clock', JSON.stringify(new Clock(1, 8, 0)));
         localStorage.setItem('calendar', JSON.stringify(new Calendar(1, 1, 998)));
+        localStorage.setItem('arrowHistory', "[]");
         location.reload(); // Recarrega a página para aplicar a mudança
         updateTooltip();
     });
 
     // FUNÇÕES
+    function drawHistoryLines() {
+        function getCanvasCoordinates(point, canvas, img, map) {
+            const ratio = getSizeRatio(img);
+            console.log(`Canvas: ${canvas.width}x${canvas.height}`);
+            console.log(`Img ratio: ${JSON.stringify(ratio)}`);
+            let x,y;
+            if (map == "slice") {
+                x = point.slice_x * ratio.widthRatio * (canvas.width/img.clientWidth);
+                y = point.slice_y * ratio.heightRatio * (canvas.height/img.clientHeight);
+            } else {
+                x = point.vert_x * ratio.widthRatio * (canvas.width/img.clientWidth);
+                y = point.vert_y * ratio.heightRatio * (canvas.height/img.clientHeight);
+            }
+            return [x,y];
+        }
+
+        // Draw the line passing through all points in arrowHistory
+        let ctx_slice = canvas_slice.getContext('2d');
+        const colors = ['red', 'green', 'blue'];
+        ctx_slice.lineWidth = 2;
+        for (let i = 0; i < arrowHistory.length - 1; i++) {
+            [x1,y1] = getCanvasCoordinates(arrowHistory[i], canvas_slice, slice_img, "slice");
+            [x2,y2] = getCanvasCoordinates(arrowHistory[i+1], canvas_slice, slice_img, "slice");
+            ctx_slice.beginPath();
+            ctx_slice.strokeStyle = colors[i%3];
+            ctx_slice.moveTo(x1, y1);
+            ctx_slice.lineTo(x2, y2);
+            ctx_slice.stroke();
+            ctx_slice.closePath();
+        }
+    }
+
+    /* DEPRECADA - ESCOLHE UM ELEMENTO ALEATÓRIO DE UM ARRAY
     function getRandomElement(images) {
         const randomIndex = Math.floor(Math.random() * images.length);
         return images[randomIndex];
-    }
+    }*/
     function updateTooltip() {
         const darkModeStatus = localStorage.getItem('darkMode') === 'true' ? 'enabled' : 'disabled';
         resetButton.title = `Current settings:
@@ -117,25 +162,30 @@ document.addEventListener('DOMContentLoaded', function () {
         Calendar is ${JSON.stringify(calendar)}
         `;
     }
+
     function saveState() {
         //console.log(currentDistrict);
         localStorage.setItem('currentDistrict', currentDistrict.getName());
         localStorage.setItem('clock', JSON.stringify(clock));
         localStorage.setItem('calendar', JSON.stringify(calendar));
+        localStorage.setItem('arrowHistory', JSON.stringify(arrowHistory));
         console.log("State saved")
     }
 
     // Função para carregar os dados do localStorage
     function loadState() {
-        console.log("Loading state");
         isDarkMode = localStorage.getItem('darkMode') === 'true'
-        console.log(`${isDarkMode ? "Dark" : "Light"} mode`);
         const savedDistrictName = localStorage.getItem('currentDistrict');
-        console.log(`Stored district: ${savedDistrictName}`);
         const savedClock = localStorage.getItem('clock');
-        console.log(`Stored clock: ${savedClock}`);
         const savedCalendar = localStorage.getItem('calendar');
+        const savedHistory = localStorage.getItem('arrowHistory');
+        // Logs
+        console.log("Loading state");
+        console.log(`${isDarkMode ? "Dark" : "Light"} mode`);
+        console.log(`Stored district: ${savedDistrictName}`);
+        console.log(`Stored clock: ${savedClock}`);
         console.log(`Stored calendar: ${savedCalendar}`);
+        console.log(`Stored history: ${savedHistory}`);
     
         try {
             if (savedDistrictName) {
@@ -143,10 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 currentDistrict = sharn.getDistrict("Terminus");
             }
-        } catch (error) {
-            console.log("Falha ao carregar o distrito");
-        }
-        try {
             if (savedClock) {
                 const parsedClock = JSON.parse(savedClock);
                 clock = new Clock(parsedClock.day, parsedClock.hour, parsedClock.minute);
@@ -154,11 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
             else{
                 clock = new Clock(1, 8, 0);
             }
-
-        } catch (error) {
-            console.log("Falha ao carregar o relógio");
-        }
-        try {
             if (savedCalendar) {
                 const parsedCalendar = JSON.parse(savedCalendar);
                 calendar = new Calendar(parsedCalendar.day, parsedCalendar.month, parsedCalendar.year);
@@ -166,74 +207,44 @@ document.addEventListener('DOMContentLoaded', function () {
             else {
                 calendar = new Calendar(1, 1, 998);
             }
+            if (savedHistory) {
+                arrowHistory = JSON.parse(savedHistory);
+            } else {
+                arrowHistory = []
+            }
         } catch (error) {
-            console.log("Falha ao carregar o calendário");
+            console.error("Falha ao carregar o estado", error);
         }
         console.log("State loaded");
-        //console.log(currentDistrict);
-        //console.log(clock);
-        //console.log(calendar);
     }
 
-    // Mapa em corte
     function initializeImages() {
+        // Mapa em corte
         mapSrc = getMap(currentDistrict);
-        const arrow_dimensions = 50;
-        const arrow_height = `${arrow_dimensions}px`;
-        const arrow_width = `${arrow_dimensions}px`;
-        slice_div.style.position = 'relative';
-        slice_div.style.display = 'inline-block';
-        imagesDiv.appendChild(slice_div);
-    
-        const slice_img = document.createElement('img');
-        slice_img.src = mapSrc;
-        slice_img.alt = 'Sharn slice map';
-        slice_img.id = 'slice_img';
         slice_img.onload = function () {
             storeOriginalDimensions(slice_img);
-            updateArrowPosition(currentDistrict.arrow_positions);
         };
-        slice_div.appendChild(slice_img);
+        slice_img.src = mapSrc;
     
-        const arrow_slice = document.createElement('img');
-        arrow_slice.src = 'arrow2.png';
-        arrow_slice.alt = 'You are here';
-        arrow_slice.id = 'arrow_slice'; // Set an ID for the arrow
-        arrow_slice.style.position = 'absolute';
+        // Seta do mapa em corte
         arrow_slice.style.width = arrow_width;
         arrow_slice.style.height = arrow_height;
-        slice_div.appendChild(arrow_slice);
     
         // Mapa vertical
-        vert_div.style.position = 'relative';
-        vert_div.style.display = 'inline-block';
-        imagesDiv.appendChild(vert_div);
-    
-        const vert_img = document.createElement('img');
-        vert_img.src = 'Sharn2.jpg';
-        vert_img.alt = 'Sharn vertical map';
-        vert_img.id = 'vert_img';
         vert_img.onload = function () {
             storeOriginalDimensions(vert_img);
-            updateArrowPosition(currentDistrict.arrow_positions);
         };
-        vert_div.appendChild(vert_img);
+        vert_img.src = 'Sharn2.jpg';
     
-        const arrow_vert = document.createElement('img');
-        arrow_vert.src = 'arrow.png';
-        arrow_vert.alt = 'You are here';
-        arrow_vert.id = 'arrow_vert'; // Set an ID for the arrow
-        arrow_vert.style.position = 'absolute';
         arrow_vert.style.width = arrow_width;
         arrow_vert.style.height = arrow_height;
-        vert_div.appendChild(arrow_vert);
     }
 
     // Skycoach logic
     skycoachList.onchange = function () {
         let selectedDistrictName = this.value;
-        console.log(`Flew to ${this.value}`);
-        console.log(`Map: ${getMap(sharn.getDistrict(this.value))}`);
+        console.log(`Flew to ${selectedDistrictName}`);
+        console.log(`Map: ${getMap(sharn.getDistrict(selectedDistrictName))}`);
         travelToSkycoachDistrict(selectedDistrictName);
     }
 
@@ -244,19 +255,8 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleSkycoachButton.classList.toggle('collapsed');
     });
 
-
     window.addEventListener('resize', () => {
-        updateArrowPosition(currentDistrict.arrow_positions);
-    });
-
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            loadingScreen.style.display = 'none';
-            mainDiv.style.display = 'block';
-        }, 1500);
-        updateDistrictInfo();
-        updateSliceMap(getMap(currentDistrict));
-        updateArrowPosition(currentDistrict.arrow_positions);
+        updateArrowPosition();
     });
 
     function storeOriginalDimensions(img) {
@@ -283,139 +283,165 @@ document.addEventListener('DOMContentLoaded', function () {
         arrow.style.height = `${size}px`;
     }
 
-    function updateSliceMap(map) {
-        slice_img.src = map;
-        //console.log(getSizeRatio(slice_img));
-    };
-
     function updateDistrictInfo() {
-        //console.log(currentDistrict);
         updateTooltip();
         nameDiv.textContent = `${currentDistrict.getName()} - ${currentDistrict.getWard().getName()}`;
-        while (descriptionDiv.firstChild) {
-            descriptionDiv.removeChild(descriptionDiv.firstChild);
-        }
-        while (navigationDiv.firstChild) {
-            navigationDiv.removeChild(navigationDiv.firstChild);
-        }
+        
+        clearChildren(descriptionDiv);
+        clearChildren(navigationDiv);
+    
+        appendDescription(currentDistrict.getDescription(), descriptionDiv);
+        updateLocationsList(currentDistrict.getLocationArray());
+        updateConnections(currentDistrict.getConnectionArray());
 
+        slice_img.src = getMap(currentDistrict);
+        skycoachList.value = currentDistrict.getName();
+    }
+    
+    function clearChildren(element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
+    
+    function appendDescription(description, parentElement) {
         let descriptionPara = document.createElement('p');
-        descriptionPara.textContent = currentDistrict.getDescription();
-        descriptionDiv.appendChild(descriptionPara);
-
+        descriptionPara.textContent = description;
+        parentElement.appendChild(descriptionPara);
+    }
+    
+    function updateLocationsList(locationsArray) {
         let locationsHeader = document.getElementById('locations-header');
         let locationsList = document.getElementById('locations-list');
-        while (locationsList.firstChild) {
-            locationsList.removeChild(locationsList.firstChild);
-        }
-        let locationsArray = currentDistrict.getLocationArray();
+        clearChildren(locationsList);
+        
         if (locationsArray.length == 0) {
             locationsHeader.classList.toggle('collapsed');
         }
+    
         locationsArray.forEach((location, index) => {
             let locationItem = document.createElement('li');
             locationItem.textContent = location.getName();
-
-            let locationDescription = document.createElement(`span`);
-            //console.log(location);
+            
+            let locationDescription = document.createElement('span');
             locationDescription.textContent = ` - ${location.getDescription()}`;
             locationDescription.classList.add('collapsed');
-
+            
             locationItem.appendChild(locationDescription);
-            locationItem.id = `location-id-${index}`; // ID único para cada local
-            locationDescription.id = `location-description-${index}`; // ID único para cada descrição
+            locationItem.id = `location-id-${index}`;
+            locationDescription.id = `location-description-${index}`;
             locationItem.addEventListener('click', function () {
-                // Verifica se a descrição está oculta
                 locationDescription.classList.toggle('collapsed');
                 clock.incrementClock(5);
                 updateClockDisplay(clock);
             });
+    
             locationsList.appendChild(locationItem);
         });
-
-        connections = currentDistrict.getConnectionArray();
+    }
+    
+    function updateConnections(connections) {
         connections.forEach(connectedDistrict => {
             const button = document.createElement('button');
-
-            let connectMap = getMap(connectedDistrict);
-            let currentMap = getMap(currentDistrict);
-
-            if (connectMap !== currentMap) {
-                connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
-                if (currentMap.includes("The_Cogs") || connectMap.includes("Skyway") || (connectMap.includes("M_") && currentMap.includes("L_")) || (connectMap.includes("U_") && currentMap.includes("M_"))) {
-                    connectionText = "↑ Subir";
-                } else if (currentMap.includes("Skyway") || connectMap.includes("The_Cogs") || (connectMap.includes("M_") && currentMap.includes("U_")) || (connectMap.includes("L_") && currentMap.includes("M_"))) {
-                    connectionText = "↓ Descer";
-                }
-            } else if (connectedDistrict.getWard() !== currentDistrict.getWard()) {
-                connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
-                if (currentDistrict.getWard().getName().includes("The Cogs")) {
-                    connectionText = "↑ Subir";
-                }
-                else if (connectionText2.includes("The Cogs")) {
-                    connectionText = "↓ Descer";
-                } else {
-                    connectionText = "↷ Atravessar";
-                }
-            } else if (connectedDistrict.getWard() == currentDistrict.getWard()) {
-                connectionText = "→ Ir";
-                connectionText2 = "";
-            }
-
-            //logText = `Atual: ${currentDistrict.getName()}; Conectado: ${connectedDistrict.getName()}; Comando: ${connectionText}`;
-            //console.log(logText);
-
+            
+            const { connectionText, connectionText2 } = getConnectionText(connectedDistrict);
             button.textContent = `${connectionText} para ${connectedDistrict.getName()}${connectionText2}`;
             button.onclick = function () {
-                currentDistrict = connectedDistrict;
-                clock.incrementClock(15);
-                updateClockDisplay(clock);
-                updateDistrictInfo();
-                updateSliceMap(getMap(currentDistrict));
-                updateArrowPosition(currentDistrict.arrow_positions);
+                travelToConnectedDistrict(connectedDistrict);
             };
+    
             navigationDiv.appendChild(button);
         });
     }
+    
+    function getConnectionText(connectedDistrict) {
+        let connectionText = "";
+        let connectionText2 = "";
+        
+        let connectMap = getMap(connectedDistrict);
+        let currentMap = getMap(currentDistrict);
+    
+        if (connectMap !== currentMap) {
+            connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
+            if (currentMap.includes("The_Cogs") || connectMap.includes("Skyway") || (connectMap.includes("M_") && currentMap.includes("L_")) || (connectMap.includes("U_") && currentMap.includes("M_"))) {
+                connectionText = "↑ Subir";
+            } else if (currentMap.includes("Skyway") || connectMap.includes("The_Cogs") || (connectMap.includes("M_") && currentMap.includes("U_")) || (currentMap.includes("L_") && connectMap.includes("M_"))) {
+                connectionText = "↓ Descer";
+            }
+        } else if (connectedDistrict.getWard() !== currentDistrict.getWard()) {
+            connectionText2 = ` (${connectedDistrict.getWard().getName()})`;
+            if (currentDistrict.getWard().getName().includes("The Cogs")) {
+                connectionText = "↑ Subir";
+            } else if (connectionText2.includes("The Cogs")) {
+                connectionText = "↓ Descer";
+            } else {
+                connectionText = "↷ Atravessar";
+            }
+        } else if (connectedDistrict.getWard() == currentDistrict.getWard()) {
+            connectionText = "→ Ir";
+            connectionText2 = "";
+        }
+    
+        return { connectionText, connectionText2 };
+    }
+    
+    function travelToConnectedDistrict(connectedDistrict) {
+        currentDistrict = connectedDistrict;
+        clock.incrementClock(15);
+        updateClockDisplay(clock);
+        updateDistrictInfo();
+        updateArrowPosition();
+    }
+    
 
     function getMap(district) {
         const wardName = district.getWard().getName();
-        if (wardName.includes('Upper') || wardName.includes('City of the Dead')) {
+        if (wardName == 'Skyway') {
+            return "Skyway.jpg";
+        }
+        else if (wardName.includes('Upper') || wardName.includes('City of the Dead')) {
             return "U_Wards.jpg";
         } else if (wardName.includes('Middle')) {
             return "M_Wards.jpg";
         }
+        else if (wardName.includes('Lower') || wardName.includes('Cliffside')) {
+            return "L_Wards.jpg";
+        }
         else if (wardName == 'The Cogs') {
             return "The_Cogs.jpg";
         }
-        else if (wardName == 'Skyway') {
-            return "Skyway.jpg";
-        }
-        else /*if (wardName.includes('Lower'))*/ {
-            return "L_Wards.jpg";
+        else {
+            console.error("Failed to fetch district map", district);
+            return;
         }
     }
 
-    function updateArrowPosition(arrowPosition) {
-        const slice_img = document.getElementById('slice_img');
+    function updateArrowPosition() {
+        arrowPosition = currentDistrict.arrow_positions;
+        if (typeof arrowPosition != "object") {
+            console.error("Invalid arrowPosition:", arrowPosition);
+            return;
+        }
         const sliceRatio = getSizeRatio(slice_img);
         const slice_x = arrowPosition.slice_x * sliceRatio.widthRatio;
         const slice_y = arrowPosition.slice_y * sliceRatio.heightRatio;
-        const sliceArrowSize = 50 * sliceRatio.widthRatio; // Base size of 50 pixels
-        let arrow_slice = document.getElementById('arrow_slice');
+        const sliceArrowSize = arrow_dimensions * sliceRatio.widthRatio; // Base size of arrow_dimensions pixels
         setArrowPosition(arrow_slice, slice_x, slice_y, sliceArrowSize);
-
-        const vert_img = document.getElementById('vert_img');
+        
         const vertRatio = getSizeRatio(vert_img);
         const vert_x = arrowPosition.vert_x * vertRatio.widthRatio;
         const vert_y = arrowPosition.vert_y * vertRatio.heightRatio;
-        const vertArrowSize = 50 * vertRatio.widthRatio; // Base size of 50 pixels
-        let arrow_vert = document.getElementById('arrow_vert');
+        const vertArrowSize = arrow_dimensions * vertRatio.widthRatio; // Base size of arrow_dimensions pixels
         setArrowPosition(arrow_vert, vert_x, vert_y, vertArrowSize);
+            
+        if (JSON.stringify(arrowHistory.at(-1)) != JSON.stringify(arrowPosition)) {
+            arrowHistory.push(arrowPosition);
+            saveState();
+        }
     }
 
 
-    // Função para exibir o pop-up de Skycoach
+    // Função para exibir a lista da de Skycoach
     document.getElementById('skycoach-button').onclick = function () {
         let modal = document.getElementById('skycoach-modal');
         if (modal.classList.contains('hidden')) {
@@ -437,8 +463,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Atualizar a interface com as informações do novo distrito
             updateDistrictInfo();
-            updateSliceMap(getMap(currentDistrict));
-            updateArrowPosition(currentDistrict.arrow_positions);
+            updateArrowPosition();
         }
     }
 
@@ -461,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 skycoachList.appendChild(listItem);
             }
         }
+        skycoachList.value = currentDistrict.getName();
     }
 
     // Funções para controlar o relógio
